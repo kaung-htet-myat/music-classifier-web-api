@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>File Prediction</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1>Music Genre Classifier</h1>
+        <form action="/file/predict/" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <h5>Please select an mp3 file to classify.</h5>
+            <input type="file" name="song_file">
+            <br>
+            <button type="submit">Predict</button>
+        </form>
+    </body>
+</html>
