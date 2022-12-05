@@ -16,17 +16,21 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+DEBUG = True
+
+if DEBUG:
+    from dotenv import load_dotenv
+    load_dotenv()  # loads the configs from .env
 
 # Model infos
-MODEL_DIR = os.path.join(BASE_DIR, "models")
-MODEL_FILENAME = "efficientnet_prcnn_melspectrogram_epoch_77_model.pth"
-LABEL_PATH = os.path.join(BASE_DIR, "genre_labels.json")
-SAMPLE_LENGTH = 5
-SAMPLE_RATE = 22050
-FFT_SIZE = 1024
-HOP_LENGTH = 256
-N_MELS = 128
-
+MODEL_DIR = os.path.join(BASE_DIR, str(os.getenv('MODEL_DIR', "models")))
+MODEL_FILENAME = str(os.getenv('MODEL_FILENAME'))
+LABEL_PATH = os.path.join(BASE_DIR, str(os.getenv('LABEL_PATH', "genre_labels.json")))
+SAMPLE_LENGTH = int(os.getenv('SAMPLE_LENGTH'))
+SAMPLE_RATE = int(os.getenv('SAMPLE_RATE'))
+FFT_SIZE = int(os.getenv('FFT_SIZE'))
+HOP_LENGTH = int(os.getenv('HOP_LENGTH'))
+N_MELS = int(os.getenv('N_MELS'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -34,11 +38,7 @@ N_MELS = 128
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-0ngds&(gwl29#^=(ys2(2it!a$s!ut^zrvhs(jckc3)!qs)&ii'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = []
-
 
 # Application definition
 

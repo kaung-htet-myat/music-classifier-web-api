@@ -2,12 +2,13 @@ import os
 import librosa
 from django.conf import settings
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from rest_framework import views
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
 
+from File_inference.models import FileInferenceModel
 from File_inference.forms import UploadFileForm
 from File_inference.utils.inference import (
     get_device,
@@ -63,6 +64,31 @@ class PredictView(views.APIView):
 
                 result = get_result(predictions, self.label_map)
 
+                file_inference_obj = FileInferenceModel(
+                                        file=request.FILES['song_file'],
+                                        prediction=result
+                                    )
+                file_inference_obj.save()
+
                 return Response({'prediction': result, 'file': request.FILES['song_file']}, status=status.HTTP_200_OK)
             except ValueError as err:
                 return Response(str(err), status=status.HTTP_400_BAD_REQUEST)
+
+
+class HistoryView(TemplateView):
+    """
+    This view is used to select a file from the list of files in the server.
+    After the selection, it will send the file to the server.
+    The server will return the predictions.
+    """
+
+    template_name = 'File_inference/history.html'
+    queryset = FileInferenceModel.objects.all()
+
+    def get_context_data(self, **kwargs):
+        """
+        This function is used to render the list of files in the MEDIA_ROOT in the html template.
+        """
+        context = super().get_context_data(**kwargs)
+        context['inference_list'] = FileInferenceModel.objects.all()
+        return context

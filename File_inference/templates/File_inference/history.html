@@ -1,0 +1,22 @@
+{% extends "File_inference/base.html" %}
+
+{% block content %}
+<table class="table">
+    <thead>
+        <tr>
+        <th scope="col">File</th>
+        <th scope="col">Prediction</th>
+        <th scope="col">Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in inference_list %}
+            <tr>
+                <td>{{ entry.file }}</td>
+                <td>{{ entry.prediction }}</td>
+                <td>{{ entry.timestamp }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

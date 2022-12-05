@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>File Prediction</title>
+        <meta charset="utf-8">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg bg-gray" style="background-color: #e3f2fd;">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'file-index' %}">Music Classifier</a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'file-index' %}">Home</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'file-history' %}">History</a>
+                      </li>
+                    </ul>
+                  </div>
+            </div>
+        </nav>
+        <div class="container text-center" style="height: 500px;">
+            <h1>Music Genre Classifier</h1>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
