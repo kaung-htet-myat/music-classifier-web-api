@@ -92,3 +92,7 @@ class HistoryView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['inference_list'] = FileInferenceModel.objects.all()
         return context
+
+
+class StreamView(TemplateView):
+    template_name: str = 'File_inference/stream.html'

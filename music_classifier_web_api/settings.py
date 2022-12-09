@@ -43,6 +43,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'File_inference',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -82,17 +84,29 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'music_classifier_web_api.wsgi.application'
-
+ASGI_APPLICATION = 'music_classifier_web_api.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': str(os.getenv('DB_NAME')), 
+            'USER': str(os.getenv('DB_USERNAME')),
+            'PASSWORD': str(os.getenv('DB_PASSWORD')),
+            'HOST': str(os.getenv('DB_HOST')), 
+            'PORT': str(os.getenv('DB_PORT')),
+        }
+    }
 
 
 # Password validation
