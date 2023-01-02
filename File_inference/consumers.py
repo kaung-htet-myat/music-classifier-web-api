@@ -33,7 +33,7 @@ class PredictionConsumer(AsyncWebsocketConsumer):
 
         _, self.label_map = get_label_map(settings.LABEL_PATH)
 
-        self.in_rate = 44100
+        self.in_rate = settings.STREAM_SAMPLE_RATE
         self.sample_length = settings.SAMPLE_LENGTH
         self.sample_rate = settings.SAMPLE_RATE
         self.fft_size = settings.FFT_SIZE
