@@ -76,19 +76,10 @@ class PredictView(views.APIView):
 
 
 class HistoryView(TemplateView):
-    """
-    This view is used to select a file from the list of files in the server.
-    After the selection, it will send the file to the server.
-    The server will return the predictions.
-    """
 
     template_name = 'File_inference/history.html'
-    queryset = FileInferenceModel.objects.all()
 
     def get_context_data(self, **kwargs):
-        """
-        This function is used to render the list of files in the MEDIA_ROOT in the html template.
-        """
         context = super().get_context_data(**kwargs)
         context['inference_list'] = FileInferenceModel.objects.all()
         return context
