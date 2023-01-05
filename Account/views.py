@@ -20,4 +20,4 @@ class UserRegistrationView(views.View):
             )
             new_user.save()
             return render(request, 'Account/register_done.html', {'new_user': new_user})
-        return render(request, 'Account/register.html', {'form': UserRegistrationForm()})
+        return render(request, 'Account/register.html', {'form': form})
