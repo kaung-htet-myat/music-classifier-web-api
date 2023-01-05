@@ -46,6 +46,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'daphne',
     'channels',
+    'Account',
     'File_inference',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -150,3 +151,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = 'file-index'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'Account.authentication.EmailAuthBackend',
+]

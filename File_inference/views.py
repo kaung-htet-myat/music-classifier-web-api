@@ -2,6 +2,8 @@ import os
 import librosa
 from django.conf import settings
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView, ListView
 from rest_framework import views
 from rest_framework import status
@@ -19,10 +21,12 @@ from File_inference.utils.inference import (
 )
 
 
+@method_decorator(login_required, name='dispatch')
 class IndexView(TemplateView):
     template_name: str = 'File_inference/index.html'
 
 
+@method_decorator(login_required, name='dispatch')
 class PredictView(views.APIView):
     template_name = 'File_inference/result.html'
     renderer_classes = [TemplateHTMLRenderer]
@@ -75,6 +79,7 @@ class PredictView(views.APIView):
                 return Response(str(err), status=status.HTTP_400_BAD_REQUEST)
 
 
+@method_decorator(login_required, name='dispatch')
 class HistoryView(TemplateView):
 
     template_name = 'File_inference/history.html'
