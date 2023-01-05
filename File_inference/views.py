@@ -69,6 +69,7 @@ class PredictView(views.APIView):
                 result = get_result(predictions, self.label_map)
 
                 file_inference_obj = FileInferenceModel(
+                                        user=request.user,
                                         file=request.FILES['song_file'],
                                         prediction=result
                                     )
@@ -86,9 +87,10 @@ class HistoryView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['inference_list'] = FileInferenceModel.objects.all()
+        context['inference_list'] = FileInferenceModel.objects.filter(user=self.request.user)
         return context
 
 
+@method_decorator(login_required, name='dispatch')
 class StreamView(TemplateView):
     template_name: str = 'File_inference/stream.html'
