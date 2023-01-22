@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form action="{% url 'file-predict' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <h5 style="margin-top: 2%; margin-bottom: 1%;">Please select an mp3 file to classify.</h5>
+    <input type="file" name="song_file" style="margin-top: 3%; margin-bottom: 3%;">
+    <br>
+    <button type="submit" class="btn btn-primary">Predict</button>
+</form>
+
+{% endblock %}

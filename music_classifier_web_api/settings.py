@@ -10,11 +10,28 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+DEBUG = True
+
+if DEBUG:
+    from dotenv import load_dotenv
+    load_dotenv()  # loads the configs from .env
+
+# Model infos
+MODEL_DIR = os.path.join(BASE_DIR, str(os.getenv('MODEL_DIR', "models")))
+MODEL_FILENAME = str(os.getenv('MODEL_FILENAME'))
+LABEL_PATH = os.path.join(BASE_DIR, str(os.getenv('LABEL_PATH', "genre_labels.json")))
+SAMPLE_LENGTH = int(os.getenv('SAMPLE_LENGTH'))
+SAMPLE_RATE = int(os.getenv('SAMPLE_RATE'))
+STREAM_SAMPLE_RATE = int(os.getenv('STREAM_SAMPLE_RATE'))
+FFT_SIZE = int(os.getenv('FFT_SIZE'))
+HOP_LENGTH = int(os.getenv('HOP_LENGTH'))
+N_MELS = int(os.getenv('N_MELS'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -22,21 +39,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-0ngds&(gwl29#^=(ys2(2it!a$s!ut^zrvhs(jckc3)!qs)&ii'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
+    'Account',
+    'File_inference',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -68,17 +86,29 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'music_classifier_web_api.wsgi.application'
-
+ASGI_APPLICATION = 'music_classifier_web_api.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': str(os.getenv('DB_NAME')), 
+            'USER': str(os.getenv('DB_USERNAME')),
+            'PASSWORD': str(os.getenv('DB_PASSWORD')),
+            'HOST': str(os.getenv('DB_HOST')), 
+            'PORT': str(os.getenv('DB_PORT')),
+        }
+    }
 
 
 # Password validation
@@ -121,3 +151,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = 'file-index'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'Account.authentication.EmailAuthBackend',
+]
