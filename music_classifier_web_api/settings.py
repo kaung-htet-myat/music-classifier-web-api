@@ -16,11 +16,11 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = False
+DEBUG = True
 
-if DEBUG:
-    from dotenv import load_dotenv
-    load_dotenv()  # loads the configs from .env
+# if DEBUG:
+#     from dotenv import load_dotenv
+#     load_dotenv()  # loads the configs from .env
 
 # Model infos
 MODEL_DIR = os.path.join(BASE_DIR, str(os.getenv('MODEL_DIR', "models")))
@@ -91,24 +91,24 @@ ASGI_APPLICATION = 'music_classifier_web_api.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+# if DEBUG:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': BASE_DIR / 'db.sqlite3',
+#         }
+#     }
+# else:
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': str(os.getenv('POSTGRES_DB')), 
+        'USER': str(os.getenv('POSTGRES_USER')),
+        'PASSWORD': str(os.getenv('POSTGRES_PASSWORD')),
+        'HOST': str(os.getenv('DB_HOST')), 
+        'PORT': str(os.getenv('DB_PORT')),
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': str(os.getenv('DB_NAME')), 
-            'USER': str(os.getenv('DB_USERNAME')),
-            'PASSWORD': str(os.getenv('DB_PASSWORD')),
-            'HOST': str(os.getenv('DB_HOST')), 
-            'PORT': str(os.getenv('DB_PORT')),
-        }
-    }
+}
 
 
 # Password validation

@@ -1,5 +1,6 @@
 import os
 import librosa
+import traceback
 from django.conf import settings
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
@@ -48,41 +49,46 @@ class PredictView(views.APIView):
     
     def post(self, request):
         form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            try:
-                sample, in_rate = librosa.load(request.FILES['song_file'], sr=None)
+        try:
+            if form.is_valid():
+                try:
+                    sample, in_rate = librosa.load(request.FILES['song_file'], sr=None)
 
-                input_segments = get_input_segments(
-                                    sample,
-                                    in_rate,
-                                    self.sample_length,
-                                    self.sample_rate,
-                                    self.fft_size,
-                                    self.hop_length,
-                                    self.n_mels,
-                                )
-                input_segments = input_segments.to(self.device)
-
-                predictions = self.model(input_segments)
-                predictions = predictions.to('cpu')
-
-                result = get_result(predictions, self.label_map)
-
-                file_inference_obj = FileInferenceModel(
-                                        user=request.user,
-                                        file=str(request.FILES['song_file'].name),
-                                        prediction=result
+                    input_segments = get_input_segments(
+                                        sample,
+                                        in_rate,
+                                        self.sample_length,
+                                        self.sample_rate,
+                                        self.fft_size,
+                                        self.hop_length,
+                                        self.n_mels,
                                     )
-                file_inference_obj.save()
+                    input_segments = input_segments.to(self.device)
 
-                return Response({'prediction': result, 'file': request.FILES['song_file']}, status=status.HTTP_200_OK)
-            except ValueError as err:
-                return Response(str(err), status=status.HTTP_400_BAD_REQUEST)
+                    predictions = self.model(input_segments)
+                    predictions = predictions.to('cpu')
+
+                    result = get_result(predictions, self.label_map)
+
+                    file_inference_obj = FileInferenceModel(
+                                            user=request.user,
+                                            file=str(request.FILES['song_file'].name),
+                                            prediction=result
+                                        )
+                    file_inference_obj.save()
+
+                    return Response({'prediction': result, 'file': request.FILES['song_file']}, status=status.HTTP_200_OK)
+                except ValueError as err:
+                    return Response({'error': err}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as err:
+                    traceback.print_exc()
+                    return Response({'error': err}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as err:
+            return Response({'error': err}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @method_decorator(login_required, name='dispatch')
 class HistoryView(TemplateView):
-
     template_name = 'File_inference/history.html'
 
     def get_context_data(self, **kwargs):
@@ -94,3 +100,8 @@ class HistoryView(TemplateView):
 @method_decorator(login_required, name='dispatch')
 class StreamView(TemplateView):
     template_name: str = 'File_inference/stream.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['stream_sample_rate'] = settings.STREAM_SAMPLE_RATE
+        return context

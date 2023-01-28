@@ -1,15 +1,10 @@
 import os
 import json
-import random
-import scipy
-import librosa
-import audiosegment
-import soundfile as sf
 from io import BytesIO
-import base64
-import numpy as np
 import torch
 import torchaudio
+import numpy as np
+from pydub import AudioSegment
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.conf import settings
 
@@ -42,7 +37,7 @@ class PredictionConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         await self.accept()
-            
+
     async def disconnect(self, close_code):
         pass
 
@@ -67,11 +62,14 @@ class PredictionConsumer(AsyncWebsocketConsumer):
     async def process_input(self, bytes_data):
 
         f = BytesIO(bytes_data)
-        s = torchaudio.io.StreamReader(f)
-        s.add_basic_audio_stream(66150)
-        input = torch.concat([chunk[0] for chunk in s.stream()])
-        input = input.squeeze(-1).numpy()
-        return input
+
+        samples = AudioSegment.from_file(f)
+        samples = samples.set_frame_rate(settings.STREAM_SAMPLE_RATE)
+        channel_samples = samples.split_to_mono()
+        samples = [s.get_array_of_samples() for s in channel_samples]
+        fp_arr = np.array(samples).T.squeeze(-1).astype(np.float32)
+        fp_arr /= np.iinfo(samples[0].typecode).max
+        return fp_arr
 
     async def receive(self, bytes_data):
         try:

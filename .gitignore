@@ -4,3 +4,4 @@ db.*
 models/
 *_labels.json
 migrations/
+data/
