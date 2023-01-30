@@ -104,4 +104,5 @@ class StreamView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['stream_sample_rate'] = settings.STREAM_SAMPLE_RATE
+        context['sample_length'] = settings.SAMPLE_LENGTH
         return context

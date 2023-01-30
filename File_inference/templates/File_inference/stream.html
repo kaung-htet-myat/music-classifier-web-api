@@ -9,8 +9,7 @@
 <script>
 
     const sampleRate = "{{ stream_sample_rate }}"
-
-    console.log(sampleRate)
+    const sampleLength = "{{ sample_length }}"
 
     navigator.mediaDevices.getUserMedia({ audio: true, sampleRate: sampleRate }).then((stream) => {
         if (!MediaRecorder.isTypeSupported('audio/webm; codecs=opus'))
@@ -38,7 +37,7 @@
                     mediaRecorder.stop()
                 }
                 sendData()
-            }, 3000);
+            }, sampleLength*1000);
         }
 
         socket.onopen = () => {
