@@ -72,7 +72,8 @@ class PredictView(views.APIView):
 
                     file_inference_obj = FileInferenceModel(
                                             user=request.user,
-                                            file=str(request.FILES['song_file'].name),
+                                            filename=str(request.FILES['song_file'].name),
+                                            file=request.FILES['song_file'],
                                             prediction=result
                                         )
                     file_inference_obj.save()
